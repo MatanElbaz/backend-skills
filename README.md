@@ -4,6 +4,10 @@ Five Claude Code skills that check backend code against common production failur
 
 Each skill is a checklist plus a bad and a good example for one class of production failure: idempotency, transaction boundaries, timeouts and retries, safe migrations, and money handling. Examples are Java/Spring and PostgreSQL.
 
+## Why
+
+Duplicate deliveries, side effects that survive a rolled-back transaction, unbounded retries, locking migrations, and floating-point money all produce code that looks correct in review and fails in production. Each skill writes down what to check for one of them, with a bad example, what a reviewer should flag, and a fixed version. On the simple cases tested below the model already raised these points without help, so what this adds is an explicit checklist you can read, change, and share with a team, not new knowledge.
+
 ## Install
 
 As a Claude Code plugin:
@@ -27,11 +31,13 @@ Or without the plugin, copy [`snippets/CLAUDE.md`](snippets/CLAUDE.md) into your
 
 Each skill has the same shape: when to use it, a checklist, a bad example, what a reviewer should flag in it, and a good example.
 
+Claude Code loads a skill when your request matches its description, or when you name it (for example `backend-skills:idempotency`).
+
 ## Does it change the output?
 
 Not by the measure I used.
 
-For each skill I asked the same review question about a different piece of code than the one in the skill, three times without the plugin and three times with it, and counted the runs whose answer mentioned something specific to that skill's checklist. Every run and the exact signal used are in [`docs/demos/`](docs/demos).
+For each skill I asked the same review question about a different piece of code than the one in the skill, three times without the plugin and three times with it, and counted the runs whose answer matched a keyword regex for that skill's checklist. The exact signal, the counts, and the last output of each arm are in [`docs/demos/`](docs/demos).
 
 <!-- results:start -->
 | Skill | Without plugin | With plugin |
@@ -45,7 +51,7 @@ For each skill I asked the same review question about a different piece of code 
 
 Counts are runs out of 3. On these five cases the model raised the point every time without the plugin, so this test shows no improvement. Idempotency scored lower with the plugin (2 of 3 against 3 of 3), which is within noise at this sample size. Separately, in 4 of the 5 recorded "with" outputs the answer names the skill it applied, so the skills do get used as a review checklist. I have not measured whether that makes reviews better, so read the outputs and judge for yourself.
 
-There are several reasons to treat this test as weak: three runs, one model, keyword matching that measures whether a point was mentioned and not whether the advice was right, and "with" runs that may also include other plugins installed on the machine. Reproduce with `scripts/demo.sh <skill> 3`. Harder, subtler cases would be a fairer test and are the next thing to try.
+There are several reasons to treat this test as weak: three runs, one model, keyword matching that measures whether a point was mentioned and not whether the advice was right, and arms that differ by more than this plugin: the "without" runs disable all skills, and the "with" runs also load the other plugins installed on the machine. The recorded outputs are verbatim model output and are not fact-checked. Reproduce with `scripts/demo.sh <skill> 3`. Harder, subtler cases would be a fairer test and are the next thing to try.
 
 ## Limitations
 
