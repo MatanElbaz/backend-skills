@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="250" viewBox="0 0 1200 250" role="img" aria-label="backend-skills: five Claude Code skills that check backend code against common production failure modes">
+  <style>.m { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }</style>
+  <rect width="1200" height="250" rx="14" fill="#FAF7F2"/>
+  <rect x="0.5" y="0.5" width="1199" height="249" rx="13.5" fill="none" stroke="#E2DACB"/>
+  <text class="m" x="56" y="92" font-size="54" font-weight="700" fill="#1C1917">backend-skills</text>
+  <text class="m" x="56" y="132" font-size="19" fill="#6E6455">Five Claude Code skills that check backend code against</text>
+  <text class="m" x="56" y="158" font-size="19" fill="#6E6455">common production failure modes.</text>
+  <rect x="56" y="176" width="127" height="32" rx="8" fill="#FFFFFF" stroke="#E2DACB"/>
+  <text class="m" x="70" y="197" font-size="15" fill="#9A5A08">idempotency</text>
+  <rect x="195" y="176" width="226" height="32" rx="8" fill="#FFFFFF" stroke="#E2DACB"/>
+  <text class="m" x="209" y="197" font-size="15" fill="#9A5A08">transaction-boundaries</text>
+  <rect x="433" y="176" width="208" height="32" rx="8" fill="#FFFFFF" stroke="#E2DACB"/>
+  <text class="m" x="447" y="197" font-size="15" fill="#9A5A08">timeouts-and-retries</text>
+  <rect x="653" y="176" width="163" height="32" rx="8" fill="#FFFFFF" stroke="#E2DACB"/>
+  <text class="m" x="667" y="197" font-size="15" fill="#9A5A08">safe-migrations</text>
+  <rect x="828" y="176" width="154" height="32" rx="8" fill="#FFFFFF" stroke="#E2DACB"/>
+  <text class="m" x="842" y="197" font-size="15" fill="#9A5A08">money-handling</text>
+</svg>
