@@ -115,9 +115,18 @@ def check_banned(root):
     return errors
 
 
+def check_snippet(root):
+    path = root / "snippets" / "CLAUDE.md"
+    if not path.exists():
+        return ["snippets/CLAUDE.md: not found"]
+    text = path.read_text()
+    return [f"snippets/CLAUDE.md: does not mention '{name}'"
+            for name in REQUIRED_SKILLS if name not in text]
+
+
 def check(root):
     root = Path(root)
-    return check_manifests(root) + check_skills(root) + check_banned(root)
+    return check_manifests(root) + check_skills(root) + check_snippet(root) + check_banned(root)
 
 
 def main():

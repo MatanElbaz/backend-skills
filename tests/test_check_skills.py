@@ -44,6 +44,9 @@ def make_repo(root: Path, skills=None):
                     "plugins": [{"name": "backend-skills", "source": "./"}]}))
     for name in (check_skills.REQUIRED_SKILLS if skills is None else skills):
         write_skill(root, name, VALID.format(name=name))
+    (root / "snippets").mkdir(exist_ok=True)
+    (root / "snippets" / "CLAUDE.md").write_text(
+        "# Backend rules\n" + "\n".join(f"- {n}" for n in check_skills.REQUIRED_SKILLS) + "\n")
 
 
 def write_skill(root: Path, name: str, text: str):
@@ -132,6 +135,11 @@ class CheckSkillsTest(unittest.TestCase):
         (self.root / ".claude-plugin" / "marketplace.json").write_text(
             json.dumps({"name": "backend-skills", "plugins": [{"name": "backend-skills", "source": "./sub"}]}))
         self.assertIn("marketplace.json: plugins[0].source must be './'", self.errors())
+
+    def test_snippet_must_mention_every_skill(self):
+        make_repo(self.root)
+        (self.root / "snippets" / "CLAUDE.md").write_text("# Backend rules\n- idempotency\n")
+        self.assertIn("snippets/CLAUDE.md: does not mention 'money-handling'", self.errors())
 
 
 if __name__ == "__main__":
