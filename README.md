@@ -2,7 +2,7 @@
 
 Five Claude Code skills that check backend code against common production failure modes.
 
-Five skills for Claude Code, each a checklist plus a bad and good example for a class of production failure: idempotency, transaction boundaries, timeouts and retries, safe migrations, and money handling. Examples are Java/Spring and PostgreSQL.
+Each skill is a checklist plus a bad and a good example for one class of production failure: idempotency, transaction boundaries, timeouts and retries, safe migrations, and money handling. Examples are Java/Spring and PostgreSQL.
 
 ## Install
 
@@ -43,9 +43,9 @@ For each skill I asked the same review question about a different piece of code 
 | `transaction-boundaries` | 3 / 3 | 3 / 3 |
 <!-- results:end -->
 
-Counts are runs out of 3. Without the plugin the model already raised the point every time, so this test shows no improvement. Idempotency scored lower with the plugin (2 of 3 against 3 of 3), which at this sample size is noise. Not captured: in the recorded outputs the plugin's skills are used as the review checklist (most answers name the skill they applied), and I have not measured whether that makes reviews better. Read the outputs and judge for yourself.
+Counts are runs out of 3. On these five cases the model raised the point every time without the plugin, so this test shows no improvement. Idempotency scored lower with the plugin (2 of 3 against 3 of 3), which is within noise at this sample size. Separately, in 4 of the 5 recorded "with" outputs the answer names the skill it applied, so the skills do get used as a review checklist. I have not measured whether that makes reviews better, so read the outputs and judge for yourself.
 
-The test is weak on purpose-built grounds: three runs, one model, keyword matching that measures whether a point was mentioned and not whether the advice was right, and the "with" runs may also include other plugins installed on the machine. Reproduce with `scripts/demo.sh <skill> 3`. Harder, subtler cases would be a fairer test and are the next thing to try.
+There are several reasons to treat this test as weak: three runs, one model, keyword matching that measures whether a point was mentioned and not whether the advice was right, and "with" runs that may also include other plugins installed on the machine. Reproduce with `scripts/demo.sh <skill> 3`. Harder, subtler cases would be a fairer test and are the next thing to try.
 
 ## Limitations
 
