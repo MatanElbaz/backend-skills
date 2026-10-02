@@ -1,0 +1,12 @@
+{
+  "name": "backend-skills",
+  "description": "Backend engineering skills for AI coding tools, from the failures that actually page people.",
+  "owner": { "name": "Matan Elbaz" },
+  "plugins": [
+    {
+      "name": "backend-skills",
+      "description": "Backend engineering skills for AI coding tools: idempotency, transaction boundaries, timeouts and retries, safe migrations, money handling.",
+      "source": "./"
+    }
+  ]
+}

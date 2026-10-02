@@ -1,0 +1,10 @@
+{
+  "name": "backend-skills",
+  "description": "Skills that make AI coding tools review and write backend code like someone who has been paged: idempotency, transaction boundaries, timeouts and retries, safe migrations, money handling.",
+  "version": "0.1.0",
+  "author": { "name": "Matan Elbaz" },
+  "homepage": "https://github.com/MatanElbaz/backend-skills",
+  "repository": "https://github.com/MatanElbaz/backend-skills",
+  "license": "MIT",
+  "keywords": ["backend", "distributed-systems", "code-review", "java", "postgres", "skills"]
+}
