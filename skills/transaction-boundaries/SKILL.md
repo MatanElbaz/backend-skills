@@ -19,7 +19,7 @@ A database transaction can roll back. An HTTP call, a published message, or a se
 3. Assume every consumer sees events at least once, and make handlers idempotent (see `idempotency`).
 4. With Spring's default proxy mode, `@Transactional` is applied by a proxy. A call from another method in the same class bypasses it, and so does a private method.
 5. By default Spring rolls back on unchecked exceptions only. A checked exception commits unless `rollbackFor` says otherwise.
-6. Keep transactions short. No waiting on users or remote systems.
+6. Keep transactions short. No waiting on users or remote systems, except the outbox relay described below.
 7. A read followed by a write of the same row needs a lock or an optimistic version column, or two requests will overwrite each other.
 
 ## Bad example
@@ -58,4 +58,4 @@ void relay() {
 }
 ```
 
-The order and its event commit or roll back together. `send` must block until the broker acknowledges, otherwise `markSent` can record an event that was never delivered. The relay can still publish an event twice if it crashes between `send` and `markSent`, which is why consumers must be idempotent. If several relay instances run, either run a single relay, or have `pending` lock its rows with `FOR UPDATE SKIP LOCKED` in a transaction that stays open until the batch is marked sent. That transaction spans the broker call, the one accepted exception to item 1, so keep batches small and the send timeout short. Charge the customer in a consumer of `order-placed`, using an idempotency key derived from the order ID.
+The order and its event commit or roll back together. `send` must block until the broker acknowledges, otherwise `markSent` can record an event that was never delivered. The relay can still publish an event twice if it crashes between `send` and `markSent`, which is why consumers must be idempotent. If several relay instances run, either run a single relay, or have `relay` open a transaction, lock the rows inside it with `FOR UPDATE SKIP LOCKED`, and keep it open until the batch is marked sent. That transaction spans the broker call, the one accepted exception to item 1, so keep batches small and the send timeout short. Charge the customer in a consumer of `order-placed`, using an idempotency key derived from the order ID.
