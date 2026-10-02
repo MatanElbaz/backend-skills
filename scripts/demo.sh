@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-# Usage: scripts/demo.sh <skill> [runs]
+# Usage: scripts/demo.sh <skill> [runs] [variant]
 # Runs the same review prompt without and with the plugin, counts how many runs
 # mention the skill-specific signal, and records everything in docs/demos/<skill>.md.
+# With a variant (for example "hard") it uses fixtures/<skill>.<variant>.md and .signal
+# and writes docs/demos/<skill>.<variant>.md.
 set -euo pipefail
 
-skill="${1:?usage: demo.sh <skill> [runs]}"
+skill="${1:?usage: demo.sh <skill> [runs] [variant]}"
 runs="${2:-3}"
+variant="${3:-}"
+name="$skill${variant:+.$variant}"
 root="$(cd "$(dirname "$0")/.." && pwd)"
-fixture="$root/fixtures/$skill.md"
-signal="$(cat "$root/fixtures/$skill.signal")"
-out="$root/docs/demos/$skill.md"
+fixture="$root/fixtures/$name.md"
+signal="$(cat "$root/fixtures/$name.signal")"
+out="$root/docs/demos/$name.md"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
@@ -36,7 +40,7 @@ done
 
 {
   echo "<!-- result: baseline=$base_hits with=$with_hits runs=$runs -->"
-  echo "# Demo: $skill"
+  echo "# Demo: $name"
   echo
   echo "Signal (regex, case-insensitive): \`$signal\`"
   echo
@@ -62,4 +66,4 @@ done
   echo "</details>"
 } > "$out"
 
-echo "$skill: baseline $base_hits/$runs, with $with_hits/$runs -> $out"
+echo "$name: baseline $base_hits/$runs, with $with_hits/$runs -> $out"

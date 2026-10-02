@@ -9,14 +9,24 @@ END = "<!-- results:end -->"
 RESULT = re.compile(r"<!-- result: baseline=(\d+) with=(\d+) runs=(\d+) -->")
 
 
+def _label(stem):
+    skill, _, variant = stem.partition(".")
+    return f"{skill} ({variant})" if variant else skill
+
+
+def _order(path):
+    skill, _, variant = path.stem.partition(".")
+    return (skill, variant != "", variant)
+
+
 def build_table(demos_dir):
     rows = ["| Skill | Without plugin | With plugin |", "|---|---|---|"]
-    for path in sorted(Path(demos_dir).glob("*.md")):
+    for path in sorted(Path(demos_dir).glob("*.md"), key=_order):
         m = RESULT.match(path.read_text().splitlines()[0])
         if not m:
             raise ValueError(f"{path.name}: first line is not a result comment")
         base, with_, runs = m.groups()
-        rows.append(f"| `{path.stem}` | {base} / {runs} | {with_} / {runs} |")
+        rows.append(f"| `{_label(path.stem)}` | {base} / {runs} | {with_} / {runs} |")
     return "\n".join(rows)
 
 

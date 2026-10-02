@@ -18,6 +18,17 @@ class UpdateReadmeTest(unittest.TestCase):
         self.assertIn("| `idempotency` | 1 / 3 | 3 / 3 |", table)
         self.assertIn("| `money-handling` | 2 / 3 | 2 / 3 |", table)
 
+    def test_variant_is_labelled_and_sorted_after_the_basic_row(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp)
+            (d / "idempotency.md").write_text("<!-- result: baseline=3 with=3 runs=3 -->\n")
+            (d / "idempotency.hard.md").write_text("<!-- result: baseline=1 with=2 runs=3 -->\n")
+            (d / "money-handling.md").write_text("<!-- result: baseline=2 with=2 runs=3 -->\n")
+            lines = update_readme.build_table(d).splitlines()
+        self.assertEqual(lines[2], "| `idempotency` | 3 / 3 | 3 / 3 |")
+        self.assertEqual(lines[3], "| `idempotency (hard)` | 1 / 3 | 2 / 3 |")
+        self.assertEqual(lines[4], "| `money-handling` | 2 / 3 | 2 / 3 |")
+
     def test_apply_replaces_only_between_markers(self):
         readme = "before\n<!-- results:start -->\nold\n<!-- results:end -->\nafter\n"
         out = update_readme.apply(readme, "NEW")
