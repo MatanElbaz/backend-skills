@@ -16,7 +16,7 @@ Most migration outages are not wrong SQL. They are correct SQL that takes a lock
 
 1. Set `lock_timeout` (and usually `statement_timeout`) in the migration, so it fails fast instead of queueing behind a long query and blocking everything behind it.
 2. Build indexes with `CREATE INDEX CONCURRENTLY`. It cannot run inside a transaction block, so the migration tool must run it outside one. For a unique constraint, build `CREATE UNIQUE INDEX CONCURRENTLY` first, then `ADD CONSTRAINT ... UNIQUE USING INDEX`. A failed concurrent build leaves an INVALID index behind: drop it and retry.
-3. Add constraints in two steps: add `NOT VALID` first, then `VALIDATE CONSTRAINT`. Validation takes a weaker lock that does not block reads or writes, but only if it commits separately from the `ADD CONSTRAINT`. Many migration tools (Flyway, Liquibase) wrap a whole migration in one transaction by default, which would hold the strong lock from `ADD CONSTRAINT` through the whole validation scan. Run the two statements in separate transactions (or in autocommit).
+3. Add CHECK and foreign-key constraints in two steps: add `NOT VALID` first, then `VALIDATE CONSTRAINT`. Validation takes a weaker lock that does not block reads or writes, but only if it commits separately from the `ADD CONSTRAINT`. Flyway (per migration) and Liquibase (per changeset) wrap the statements in one transaction by default, which would hold the strong lock from `ADD CONSTRAINT` through the whole validation scan. Run the two statements in separate transactions (or in autocommit).
 4. `SET NOT NULL` scans the whole table under a strong lock. On PostgreSQL 12 and later it skips the scan if a validated `CHECK (col IS NOT NULL)` already exists, so add that first.
 5. Use expand and contract. Add the new column, deploy code that writes both, backfill, switch reads, and drop the old column in a later release. Never rename or drop in the same release that stops using the column.
 6. Backfill in small batches with keyset pagination, throttled and resumable, outside the schema migration. One `UPDATE` over a whole table is one huge transaction.
@@ -41,7 +41,7 @@ ALTER TABLE payments ALTER COLUMN reference SET NOT NULL;
 ## Good example
 
 ```sql
-SET lock_timeout = '3s';
+-- Start every migration below with: SET lock_timeout = '3s';
 
 -- migration 1, run outside a transaction block
 CREATE INDEX CONCURRENTLY idx_payments_status ON payments (status);
