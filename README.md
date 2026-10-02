@@ -37,28 +37,33 @@ Claude Code loads a skill when your request matches its description, or when you
 
 Not by the measure I used.
 
-For each skill I asked the same review question about a different piece of code than the one in the skill, three times without the plugin and three times with it, and counted the runs whose answer matched a keyword regex for that skill's checklist. The exact signal, the counts, and the last output of each arm are in [`docs/demos/`](docs/demos).
+For each skill I asked the same review question about a different piece of code than the one in the skill, three times without the plugin and three times with it, and counted the runs whose answer matched a keyword regex for that skill's checklist. Each skill has a basic case and a harder one, where the code has an obvious problem plus a subtler one that the checklist covers. The exact signal, the counts, and the last output of each arm are in [`docs/demos/`](docs/demos).
 
 <!-- results:start -->
 | Skill | Without plugin | With plugin |
 |---|---|---|
 | `idempotency` | 3 / 3 | 2 / 3 |
+| `idempotency (hard)` | 3 / 3 | 3 / 3 |
 | `money-handling` | 3 / 3 | 3 / 3 |
+| `money-handling (hard)` | 3 / 3 | 3 / 3 |
 | `safe-migrations` | 3 / 3 | 3 / 3 |
+| `safe-migrations (hard)` | 3 / 3 | 3 / 3 |
 | `timeouts-and-retries` | 3 / 3 | 3 / 3 |
+| `timeouts-and-retries (hard)` | 3 / 3 | 3 / 3 |
 | `transaction-boundaries` | 3 / 3 | 3 / 3 |
+| `transaction-boundaries (hard)` | 3 / 3 | 3 / 3 |
 <!-- results:end -->
 
-Counts are runs out of 3. On these five cases the model raised the point every time without the plugin, so this test shows no improvement. Idempotency scored lower with the plugin (2 of 3 against 3 of 3), which is within noise at this sample size. Separately, in 4 of the 5 recorded "with" outputs the answer names the skill it applied, so the skills do get used as a review checklist. I have not measured whether that makes reviews better, so read the outputs and judge for yourself.
+Counts are runs out of 3. On all ten cases the model raised the point every time without the plugin, including the harder ones, so this test shows no improvement. Idempotency scored lower with the plugin on the basic case (2 of 3 against 3 of 3), which is within noise at this sample size. Separately, in 8 of the 10 recorded "with" outputs the answer names the skill it applied, so the skills do get used as a review checklist. I have not measured whether that makes reviews better, so read the outputs and judge for yourself.
 
-There are several reasons to treat this test as weak: three runs, one model, keyword matching that measures whether a point was mentioned and not whether the advice was right, and arms that differ by more than this plugin: the "without" runs disable all skills, and the "with" runs also load the other plugins installed on the machine. The recorded outputs are verbatim model output and are not fact-checked. Reproduce with `scripts/demo.sh <skill> 3`. Harder, subtler cases would be a fairer test and are the next thing to try.
+There are several reasons to treat this test as weak: three runs, one model, keyword matching that measures whether a point was mentioned and not whether the advice was right, and arms that differ by more than this plugin: the "without" runs disable all skills, and the "with" runs also load the other plugins installed on the machine. The recorded outputs are verbatim model output and are not fact-checked. Reproduce with `scripts/demo.sh <skill> 3` (add `hard` as a third argument for the harder case). I do not have a case where the model misses the point without the plugin, so I cannot show a benefit. What this repo offers is the written checklist, not measured uplift.
 
 ## Limitations
 
 - Examples are Java 17+ and PostgreSQL. The checklists apply elsewhere, the code does not.
 - These are review heuristics, not a replacement for a review by someone who knows your system.
 - The skills describe common failure modes. They do not know your architecture.
-- No measured improvement yet. See the section above.
+- No measured improvement. See the section above.
 
 ## Contributing
 
