@@ -5,7 +5,7 @@ description: Use when code stores, computes, converts, compares, or displays mon
 
 # Money handling
 
-Money bugs are quiet. They show up as a cent off per thousand transactions, found months later by reconciliation.
+Money bugs are quiet. They show up as a cent off here and there, found months later by reconciliation.
 
 ## When to use
 
@@ -55,8 +55,9 @@ BigDecimal net = lines.stream()
     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
 // Rounding rule: HALF_EVEN here. Use whatever your jurisdiction or contract requires.
-BigDecimal gross = net.multiply(vatFactor)
-    .setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN);
+int scale = currency.getDefaultFractionDigits();
+if (scale < 0) throw new IllegalArgumentException("no minor unit: " + currency);
+BigDecimal gross = net.multiply(vatFactor).setScale(scale, RoundingMode.HALF_EVEN);
 
 if (gross.compareTo(invoice.amount()) == 0) {
     markPaid();
