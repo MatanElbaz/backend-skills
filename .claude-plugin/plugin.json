@@ -1,6 +1,6 @@
 {
   "name": "backend-skills",
-  "description": "Skills that make AI coding tools review and write backend code like someone who has been paged: idempotency, transaction boundaries, timeouts and retries, safe migrations, money handling.",
+  "description": "Five skills that check backend code against common production failure modes: idempotency, transaction boundaries, timeouts and retries, safe migrations, money handling.",
   "version": "0.1.0",
   "author": { "name": "Matan Elbaz" },
   "homepage": "https://github.com/MatanElbaz/backend-skills",
