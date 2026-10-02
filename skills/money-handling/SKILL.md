@@ -16,7 +16,7 @@ Money bugs are quiet. They show up as a cent off per thousand transactions, foun
 
 1. Never `float` or `double`. Use integer minor units (`long` cents) or `BigDecimal` with an explicit scale.
 2. An amount always travels with its currency. Never add or compare across currencies.
-3. The number of decimal places depends on the currency (JPY has 0, KWD has 3). Take it from ISO 4217 data, for example `Currency.getDefaultFractionDigits()`, never from a hardcoded 2.
+3. The number of decimal places depends on the currency (JPY has 0, KWD has 3). Take it from ISO 4217 data, for example `Currency.getDefaultFractionDigits()`, never from a hardcoded 2. It returns -1 for pseudo-currencies such as XXX, so reject those.
 4. Every division or scale change names its `RoundingMode`. `BigDecimal.divide` without one throws on non-terminating results. Document the business rule you chose.
 5. `BigDecimal.equals` compares scale, so `2.0` does not equal `2.00`. Compare with `compareTo`.
 6. When splitting an amount (shares, installments), the parts must sum to the total. Distribute the remainder explicitly instead of rounding each part.
@@ -48,13 +48,14 @@ return total;                                     // serialized as a JSON number
 
 ```java
 Currency currency = invoice.currency();
-BigDecimal vat = new BigDecimal("1.17");
+BigDecimal vatFactor = new BigDecimal("1.17");   // 17% VAT as a multiplier
 
 BigDecimal net = lines.stream()
     .map(l -> l.unitPrice().multiply(BigDecimal.valueOf(l.qty())))
     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-BigDecimal gross = net.multiply(vat)
+// Rounding rule: HALF_EVEN here. Use whatever your jurisdiction or contract requires.
+BigDecimal gross = net.multiply(vatFactor)
     .setScale(currency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN);
 
 if (gross.compareTo(invoice.amount()) == 0) {
