@@ -1,6 +1,6 @@
 # Backend rules
 
-Copy this into a project's `CLAUDE.md` or `AGENTS.md`. Each section matches the plugin skill of the same name, which has the full checklist and examples.
+Copy this into a project's `CLAUDE.md` or `AGENTS.md`. Each section matches the skill of the same name in https://github.com/MatanElbaz/backend-skills, which has the full checklist and examples.
 
 ## idempotency
 - Anything that can be retried or redelivered needs an idempotency key from the caller or the message ID.
@@ -16,7 +16,7 @@ Copy this into a project's `CLAUDE.md` or `AGENTS.md`. Each section matches the 
 - Retry at one layer only.
 
 ## safe-migrations
-- Set `lock_timeout`. Build indexes `CONCURRENTLY`. Add constraints `NOT VALID`, then validate in a separate transaction.
+- Set `lock_timeout`. Build indexes `CONCURRENTLY`. Add CHECK and foreign-key constraints `NOT VALID`, then validate in a separate transaction.
 - Backfill in batches, outside the schema migration. Expand and contract, never rename in place.
 
 ## money-handling
