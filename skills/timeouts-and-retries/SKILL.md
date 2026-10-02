@@ -68,7 +68,7 @@ RetryConfig config = RetryConfig.custom()
 Retry retry = Retry.of("pricing", config);
 
 String callPricing(String sku) throws Throwable {
-    HttpRequest req = HttpRequest.newBuilder(URI.create(baseUrl + "/prices/" + sku))
+    HttpRequest req = HttpRequest.newBuilder(URI.create(baseUrl + "/prices/" + sku))  // sku already validated as [A-Za-z0-9-]+; never put unchecked input in a URI
         .timeout(Duration.ofSeconds(2))
         .GET()
         .build();
@@ -82,4 +82,4 @@ String callPricing(String sku) throws Throwable {
 }
 ```
 
-Resilience4j is shown, but the rules do not depend on the library. Only timeouts, connection failures and 503 or 429 are retried. Any other 4xx fails immediately. With at most 3 attempts of 500 ms connect plus 2 s for the response headers, plus under half a second of backoff, the worst case is under 8 seconds. That bound covers time to response headers: `HttpRequest.timeout` does not cap a slow body read, so cap that separately if bodies can be large. The figure must fit inside the caller's own deadline. A GET is safe to retry. A POST needs an idempotency key first.
+Resilience4j is shown, but the rules do not depend on the library. Only timeouts, refused connections, and 503 or 429 are retried. Any other 4xx fails immediately. This example does not read `Retry-After`; if the service sends one, wait at least that long instead of the computed backoff. A connection reset arrives as a plain `IOException` and is not retried here; add it for idempotent calls. With at most 3 attempts of 500 ms connect plus 2 s for the response headers, plus under half a second of backoff, the worst case is under 8 seconds. That bound covers time to response headers: `HttpRequest.timeout` does not cap a slow body read, so cap that separately if bodies can be large. The figure must fit inside the caller's own deadline. A GET is safe to retry. A POST needs an idempotency key first.
